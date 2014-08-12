@@ -1,17 +1,17 @@
 var pebble = require('org.beuckman.tipebble');
 
-pebble.setAppUUID("28AF3DC7-E40D-490F-BEF2-29548C8B0600");
+pebble.setAppUUID("226834ae-786e-4302-a52f-6e7efc9f990b");
 
 
 $.connectedCount.text = pebble.connectedCount;
 
 
 function watchConnected(e) {
-  alert("watchConnected");
+  Ti.API.info("watchConnected");
   $.connectedCount.text = pebble.connectedCount;
 }
 function watchDisconnected(e) {
-  alert("watchDisconnected");
+  Ti.API.info("watchDisconnected");
   $.connectedCount.text = pebble.connectedCount;
 }
 pebble.addEventListener("watchConnected", watchConnected);
@@ -25,7 +25,7 @@ function getVersionInfo() {
       alert(e);
     },
     error : function(e) {
-      alert(e);
+      Ti.API.error(e);
     }
   });
 }
@@ -35,10 +35,10 @@ function getVersionInfo() {
 function launchApp() {
   pebble.launchApp({
     success : function(e) {
-      alert(e);
+      Ti.API.info(e);
     },
     error : function(e) {
-      alert(e);
+      Ti.API.error(e);
     }
   });
 }
@@ -46,10 +46,10 @@ function launchApp() {
 function killApp() {
   pebble.killApp({
     success : function(e) {
-      alert(e);
+      Ti.API.info(e);
     },
     error : function(e) {
-      alert(e);
+      Ti.API.error(e);
     }
   });
 }
@@ -59,30 +59,37 @@ function sendImage() {
   var f = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, '123456789A.png');
 
   pebble.sendImage({
-    image : f.read()
+    key: 2,
+    image : f.read(),
+    success: function() {
+        Ti.API.info("sendImage success");
+    },
+    error: function(e) {
+        Ti.API.error("sendImage error");
+        Ti.API.error(e);
+    }
   });
 }
 
-/*
- pebble.appMessageSupported(function(e) {
- Ti.API.info("appMessageSupported");
- });
+function sendMessage() {
+  pebble.sendMessage({
+    message: {
+      0: 123,
+      1: 'TiPebble'
+    },
+    success: function(e) {
+      Ti.API.info(e);
+    },
+    error : function(e) {
+      Ti.API.error(e);
+    }
+  });
+}
 
- var update = {
- 0: 123,
- 1: "hello"
- };
- pebble.pushUpdate({
- update: update,
 
- });
-
- pebble.addEventListener("updateReceived", function(e) {
- Ti.API.info("updateReceived");
- Ti.API.info(e);
- });
- pebble.receiveUpdates(true);
-
- */
+pebble.addEventListener("update", function(e) {
+    Ti.API.info("updateReceived");
+    alert(e);
+});
 
 $.index.open();

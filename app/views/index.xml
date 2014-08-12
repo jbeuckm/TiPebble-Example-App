@@ -7,7 +7,7 @@
     
     <Button onClick="launchApp">Launch App</Button>
     
-    <Button onClick="killApp">Kill App</Button>
+    <Button onClick="sendMessage">Send Message</Button>
     
 	  <View layout="horizontal" height="44dp">
   	  <Label>connected watches:</Label>
@@ -17,6 +17,8 @@
     <ImageView image="123456789A.png"/>
     
     <Button onClick="sendImage">Send Image</Button>
+    
+    <Button onClick="killApp">Kill App</Button>
 
 	</Window>
 </Alloy>

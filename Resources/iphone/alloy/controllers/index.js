@@ -1,10 +1,19 @@
+function __processArg(obj, key) {
+    var arg = null;
+    if (obj) {
+        arg = obj[key] || null;
+        delete obj[key];
+    }
+    return arg;
+}
+
 function Controller() {
     function watchConnected() {
-        alert("watchConnected");
+        Ti.API.info("watchConnected");
         $.connectedCount.text = pebble.connectedCount;
     }
     function watchDisconnected() {
-        alert("watchDisconnected");
+        Ti.API.info("watchDisconnected");
         $.connectedCount.text = pebble.connectedCount;
     }
     function getVersionInfo() {
@@ -13,41 +22,65 @@ function Controller() {
                 alert(e);
             },
             error: function(e) {
-                alert(e);
+                Ti.API.error(e);
             }
         });
     }
     function launchApp() {
         pebble.launchApp({
             success: function(e) {
-                alert(e);
+                Ti.API.info(e);
             },
             error: function(e) {
-                alert(e);
+                Ti.API.error(e);
             }
         });
     }
     function killApp() {
         pebble.killApp({
             success: function(e) {
-                alert(e);
+                Ti.API.info(e);
             },
             error: function(e) {
-                alert(e);
+                Ti.API.error(e);
             }
         });
     }
     function sendImage() {
         var f = Ti.Filesystem.getFile(Ti.Filesystem.resourcesDirectory, "123456789A.png");
         pebble.sendImage({
-            image: f.read()
+            key: 2,
+            image: f.read(),
+            success: function() {
+                Ti.API.info("sendImage success");
+            },
+            error: function(e) {
+                Ti.API.error("sendImage error");
+                Ti.API.error(e);
+            }
+        });
+    }
+    function sendMessage() {
+        pebble.sendMessage({
+            message: {
+                0: 123,
+                1: "TiPebble"
+            },
+            success: function(e) {
+                Ti.API.info(e);
+            },
+            error: function(e) {
+                Ti.API.error(e);
+            }
         });
     }
     require("alloy/controllers/BaseController").apply(this, Array.prototype.slice.call(arguments));
     this.__controllerPath = "index";
-    arguments[0] ? arguments[0]["__parentSymbol"] : null;
-    arguments[0] ? arguments[0]["$model"] : null;
-    arguments[0] ? arguments[0]["__itemTemplate"] : null;
+    if (arguments[0]) {
+        __processArg(arguments[0], "__parentSymbol");
+        __processArg(arguments[0], "$model");
+        __processArg(arguments[0], "__itemTemplate");
+    }
     var $ = this;
     var exports = {};
     var __defers = {};
@@ -75,11 +108,11 @@ function Controller() {
     $.__views.index.add($.__views.__alloyId2);
     launchApp ? $.__views.__alloyId2.addEventListener("click", launchApp) : __defers["$.__views.__alloyId2!click!launchApp"] = true;
     $.__views.__alloyId3 = Ti.UI.createButton({
-        title: "Kill App",
+        title: "Send Message",
         id: "__alloyId3"
     });
     $.__views.index.add($.__views.__alloyId3);
-    killApp ? $.__views.__alloyId3.addEventListener("click", killApp) : __defers["$.__views.__alloyId3!click!killApp"] = true;
+    sendMessage ? $.__views.__alloyId3.addEventListener("click", sendMessage) : __defers["$.__views.__alloyId3!click!sendMessage"] = true;
     $.__views.__alloyId4 = Ti.UI.createView({
         layout: "horizontal",
         height: "44dp",
@@ -112,18 +145,29 @@ function Controller() {
     });
     $.__views.index.add($.__views.__alloyId7);
     sendImage ? $.__views.__alloyId7.addEventListener("click", sendImage) : __defers["$.__views.__alloyId7!click!sendImage"] = true;
+    $.__views.__alloyId8 = Ti.UI.createButton({
+        title: "Kill App",
+        id: "__alloyId8"
+    });
+    $.__views.index.add($.__views.__alloyId8);
+    killApp ? $.__views.__alloyId8.addEventListener("click", killApp) : __defers["$.__views.__alloyId8!click!killApp"] = true;
     exports.destroy = function() {};
     _.extend($, $.__views);
     var pebble = require("org.beuckman.tipebble");
-    pebble.setAppUUID("28AF3DC7-E40D-490F-BEF2-29548C8B0600");
+    pebble.setAppUUID("226834ae-786e-4302-a52f-6e7efc9f990b");
     $.connectedCount.text = pebble.connectedCount;
     pebble.addEventListener("watchConnected", watchConnected);
     pebble.addEventListener("watchDisconnected", watchDisconnected);
+    pebble.addEventListener("update", function(e) {
+        Ti.API.info("updateReceived");
+        alert(e);
+    });
     $.index.open();
     __defers["$.__views.__alloyId1!click!getVersionInfo"] && $.__views.__alloyId1.addEventListener("click", getVersionInfo);
     __defers["$.__views.__alloyId2!click!launchApp"] && $.__views.__alloyId2.addEventListener("click", launchApp);
-    __defers["$.__views.__alloyId3!click!killApp"] && $.__views.__alloyId3.addEventListener("click", killApp);
+    __defers["$.__views.__alloyId3!click!sendMessage"] && $.__views.__alloyId3.addEventListener("click", sendMessage);
     __defers["$.__views.__alloyId7!click!sendImage"] && $.__views.__alloyId7.addEventListener("click", sendImage);
+    __defers["$.__views.__alloyId8!click!killApp"] && $.__views.__alloyId8.addEventListener("click", killApp);
     _.extend($, exports);
 }
 
